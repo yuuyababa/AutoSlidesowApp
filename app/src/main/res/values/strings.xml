@@ -3,4 +3,5 @@
     <string name="previousView">戻る</string>
     <string name="nextView">進む</string>
     <string name="playStop">再生/停止</string>
+    <string name="moveStop">スライドショーを停止してください！</string>
 </resources>

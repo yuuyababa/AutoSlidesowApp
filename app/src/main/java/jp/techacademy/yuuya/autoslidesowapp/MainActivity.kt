@@ -11,6 +11,7 @@ import android.os.Handler
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import com.google.android.material.snackbar.Snackbar
 import  kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -47,11 +48,19 @@ class MainActivity : AppCompatActivity() {
         }
         //次へボタン入力時動作
         nextView.setOnClickListener {
-            if (slideSwich === 0) potisionNo = getContentsInfo(1, potisionNo)
+            if (slideSwich === 0) {
+                potisionNo = getContentsInfo(1, potisionNo)
+            } else {
+                moveSlide()
+            }
         }
         //戻るボタン入力時動作
         previousView.setOnClickListener {
-            if (slideSwich === 0) potisionNo = getContentsInfo(2, potisionNo)
+            if (slideSwich === 0) {
+                potisionNo = getContentsInfo(2, potisionNo)
+            } else {
+                moveSlide()
+            }
 
         }
 
@@ -82,8 +91,8 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 },
-                2000,
-                2000
+                2000,                                   //2秒後開始
+                2000                                   //2秒ごとに更新
             )
         } else {
             slideTimer!!.cancel()
@@ -92,9 +101,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    //スナックバー用
+    private fun moveSlide() {
+        val snackbar =
+            Snackbar.make(activity_main, getString(R.string.moveStop), Snackbar.LENGTH_SHORT)
+        snackbar.show()
+
+    }
+
     //画像取得・および表示部分
     private fun getContentsInfo(next: Int, positionNo: Int): Int {
-        //画像の情報を取得する。
+
         val resolver = contentResolver
         var cursor = resolver.query(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -107,12 +124,12 @@ class MainActivity : AppCompatActivity() {
 
         if (cursor!!.moveToFirst()) {
 
-
+            //前の画像を読み込む場合
             if (next === 1) {
 
-                cursor.moveToPosition(positionNo)
+                cursor.moveToPosition(positionNo)           //カーソル現在位置
 
-                if (cursor.isLast) {
+                if (cursor.isLast) {                        //最後の画像参照時
                     cursor.moveToFirst()
 
                 } else {
@@ -121,9 +138,9 @@ class MainActivity : AppCompatActivity() {
 
             } else if (next === 2) {
 
-                cursor.moveToPosition(positionNo)
+                cursor.moveToPosition(positionNo)           //カーソル現在位置
 
-                if (cursor.isFirst) {
+                if (cursor.isFirst) {                       //最初の画像参照時
                     cursor.moveToLast()
                 } else {
                     cursor.moveToPrevious()
@@ -143,7 +160,7 @@ class MainActivity : AppCompatActivity() {
 
             slideViewer.setImageURI(imageUri)
 
-            return cursorPotision
+            return cursorPotision                          //カーソルの位置をリターン
 
         } else {
             cursor.close()
